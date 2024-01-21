@@ -142,23 +142,29 @@
         # Function to run a command and display real-time progress
         def run_command(args):
             st.info(f"Federated Learning network is now training with 1 server and 2 clients")
+            result = subprocess.run(args, capture_output=True, text=True)
 
-            process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            try:
+                result.check_returncode()
 
-            while True:
-                output = process.stdout.readline()
-                if output == '' and process.poll() is not None:
-                    break
-                if output:
-                    st.text(output.strip())
+                # Display training progress and logs
+                for line in result.stdout.splitlines():
+                    if "Epoch" in line:
+                        epoch_info = line.split()
+                        current_epoch = int(epoch_info[1])
+                        total_epochs = int(epoch_info[3])
+                        progress_percent = (current_epoch / total_epochs) * 100
+                        st.progress(progress_percent)
 
-            return_code = process.poll()
+                    # Customize this part based on the actual format of your training logs
+                    # For example, displaying lines containing "Loss" or "Accuracy"
+                    if "Loss" in line or "Accuracy" in line:
+                        st.write(line)
 
-            if return_code == 0:
-                st.success("Training completed successfully!")
-            else:
-                st.error(f"Error during training. Return code: {return_code}")
-
+                st.success("Training completed successfully.")
+            except subprocess.CalledProcessError as e:
+                st.error(result.stderr)
+                raise e
 
         if st.button("Train"):
             stdout = io.StringIO()
