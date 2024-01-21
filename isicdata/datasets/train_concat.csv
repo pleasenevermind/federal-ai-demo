@@ -1,4 +1,4 @@
-image_name,patient_id,sex,age_approx,anatom_site_general_challenge,target
+image_name,patient_id,sex,age,location,target
 ISIC_2637011,IP_7279968,male,45.0,head/neck,0
 ISIC_0015719,IP_3075186,female,45.0,upper extremity,0
 ISIC_0052212,IP_2842074,female,50.0,lower extremity,0
