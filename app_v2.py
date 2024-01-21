@@ -24,20 +24,18 @@ import time
 
 # Function to load and preprocess image
 def load_and_preprocess_image(image_file):
-    image = Image.open(image_file)
-    st.image(image, width=300)
-    image = tf.keras.preprocessing.image.img_to_array(image)
-    image = tf.cast(image, tf.float32) / 255.0
-    img_size = [256, 256]
-    
-    print("Image shape before reshaping:", image.shape)  # Add this line for debugging
-    
-    image = tf.reshape(image, [*img_size, 3])
-    
-    print("Image shape after reshaping:", image.shape)  # Add this line for debugging
-    
-    image = tf.expand_dims(image, axis=0)
-    return image
+    if image_file is not None:
+        image = Image.open(image_file)
+        st.image(image, width=300)  # Display the uploaded image
+        image = image.resize((256, 256))  # Resize the image to (256, 256)
+        image = tf.keras.preprocessing.image.img_to_array(image)
+        image = tf.cast(image, tf.float32) / 255.0
+        img_size = [256, 256]
+        image = tf.reshape(image, [*img_size, 3])
+        image = tf.expand_dims(image, axis=0)
+        return image
+    return None
+
 
 
 # Function to create the skin cancer detection model
