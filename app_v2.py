@@ -136,65 +136,6 @@ def data_exploration_page():
         st.pyplot(fig)
 
 # Function for the "Training" page
-# def training_page():
-#     test_df = st.file_uploader("Choose a file", key='diagnosis')
-
-#     # Function to run a command and display real-time progress
-#     def run_command(args):
-#         st.info(f"Federated Learning network is now training with 1 server and 2 clients")
-#         result = subprocess.run(args, capture_output=True, text=True)
-
-#         try:
-#             result.check_returncode()
-
-#             # Display training progress and logs
-#             for line in result.stdout.splitlines():
-#                 if "Epoch" in line:
-#                     epoch_info = line.split()
-#                     current_epoch = int(epoch_info[1])
-#                     total_epochs = int(epoch_info[3])
-#                     progress_percent = (current_epoch / total_epochs) * 100
-#                     st.progress(progress_percent)
-
-#                 # Customize this part based on the actual format of your training logs
-#                 # For example, displaying lines containing "Loss" or "Accuracy"
-#                 if "Loss" in line or "Accuracy" in line:
-#                     st.write(line)
-
-#             st.success("Training completed successfully.")
-#         except subprocess.CalledProcessError as e:
-#             st.error(result.stderr)
-#             raise e
-
-#     if st.button("Train"):
-#         stdout = io.StringIO()
-#         stderr = io.StringIO()
-#         try:
-#             with contextlib.redirect_stdout(stdout):
-#                 with contextlib.redirect_stderr(stderr):
-#                     with st.spinner(f'Training with {test_df.name}...'):
-#                         run_command(["bash", "run.sh", "-p", f"isicdata/datasets/{test_df.name}"])
-#         except Exception as e:
-#             st.write(f"Failure while executing: {e}")
-
-# # Main function to run the Streamlit app
-# def main():
-#     st.sidebar.image("logo.png", use_column_width=True)
-#     st.sidebar.title("Skin Cancer Detection through Neural Network on Federated Learning")
-
-#     page_names_to_funcs = {
-#         "Image Detection": image_detection_page,
-#         "Data Exploration": data_exploration_page,
-#         "Training": training_page,
-#     }
-
-#     selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
-#     page_names_to_funcs[selected_page]()
-
-# if __name__ == "__main__":
-#     main()
-
-# Function for the "Training" page
 def training_page():
     test_df = st.file_uploader("Choose a file", key='diagnosis')
 
@@ -236,19 +177,48 @@ def training_page():
         except Exception as e:
             st.write(f"Failure while executing: {e}")
 
+# # Main function to run the Streamlit app
+# def main():
+#     st.sidebar.image("logo.png", use_column_width=True)
+#     st.sidebar.title("Skin Cancer Detection through Neural Network on Federated Learning")
+
+#     page_names_to_funcs = {
+#         "Image Detection": image_detection_page,
+#         "Data Exploration": data_exploration_page,
+#         "Training": training_page,
+#     }
+
+#     selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
+#     page_names_to_funcs[selected_page]()
+
+# if __name__ == "__main__":
+#     main()
+
 # Main function to run the Streamlit app
 def main():
     st.sidebar.image("logo.png", use_column_width=True)
     st.sidebar.title("Skin Cancer Detection through Neural Network on Federated Learning")
 
-    page_names_to_funcs = {
-        "Image Detection": image_detection_page,
-        "Data Exploration": data_exploration_page,
-        "Training": training_page,
-    }
+    # Display "Connect Wallet" button if wallet is not connected
+    if not st.session_state.get("wallet_connected", False):
+        st.sidebar.write("Connect your Web3 Wallet:")
+        connect_button = st.sidebar.button("Connect Wallet")
+        if connect_button:
+            st.session_state.wallet_connected = True
+            st.success("Wallet connected successfully!")
 
-    selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
-    page_names_to_funcs[selected_page]()
+    # Proceed with the app only if wallet is connected
+    if st.session_state.get("wallet_connected", False):
+        page_names_to_funcs = {
+            "Image Detection": image_detection_page,
+            "Data Exploration": data_exploration_page,
+            "Training": training_page,
+        }
+
+        selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
+        page_names_to_funcs[selected_page]()
+    else:
+        st.warning("Connect your Web3 wallet to access the app.")
 
 if __name__ == "__main__":
     main()
